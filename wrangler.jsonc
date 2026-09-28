@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "strapolary",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true }
+  // Secrets are NOT stored here. Set them with:
+  //   npx wrangler secret put DATABASE_URL   (and AUTH_SECRET, STRIPE_SECRET_KEY, ...)
+  // Non-secret values can go in "vars": { "APP_URL": "https://your-domain" }
+}
