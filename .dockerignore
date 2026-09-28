@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+.next
+.open-next
+.wrangler
+src/generated
+.env
+.env.*
+!.env.example
+.dev.vars*
+Dockerfile
+docker-compose.yml
+README.md
+*.log

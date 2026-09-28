@@ -1,0 +1,54 @@
+# Local development / self-hosting.
+#
+#   cp .env.example .env         # fill in secrets
+#   docker compose --profile local-db up -d db    # optional local Postgres
+#   docker compose run --rm migrate               # apply migrations + seed
+#   docker compose up --build app                 # http://localhost:3000
+#
+# To use Neon instead of the local database, set DATABASE_URL (and DIRECT_URL)
+# in .env to your Neon connection strings and skip the `db` service.
+
+services:
+  app:
+    build:
+      context: .
+      target: runner
+    env_file: .env
+    ports:
+      - "3000:3000"
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      target: builder
+    env_file: .env
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
+    profiles: ["tools"]
+
+  db:
+    image: postgres:17-alpine
+    profiles: ["local-db"]
+    environment:
+      POSTGRES_USER: strapolary
+      POSTGRES_PASSWORD: strapolary
+      POSTGRES_DB: strapolary
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U strapolary"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  pgdata:
