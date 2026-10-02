@@ -36,6 +36,28 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/*": ["./node_modules/pg-cloudflare/**/*"],
   },
+  // Turbopack's WASM loader (used by the Prisma query compiler) resolves a
+  // dynamic path, so the tracer pulls in the whole project. Keep build-time
+  // tooling out of the server bundle; the Workers upload has a size limit.
+  outputFileTracingExcludes: {
+    "/*": [
+      "./node_modules/prisma/**/*",
+      "./node_modules/@prisma/dev/**/*",
+      "./node_modules/@prisma/engines/**/*",
+      "./node_modules/@prisma/studio-core/**/*",
+      "./node_modules/@electric-sql/**/*",
+      "./node_modules/wrangler/**/*",
+      "./node_modules/workerd/**/*",
+      "./node_modules/@cloudflare/**/*",
+      "./node_modules/@opennextjs/**/*",
+      "./node_modules/esbuild/**/*",
+      "./node_modules/@esbuild/**/*",
+      "./node_modules/@next/swc-*/**/*",
+      "./node_modules/lightningcss*/**/*",
+      "./node_modules/@ast-grep/**/*",
+      "./node_modules/typescript/**/*",
+    ],
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
